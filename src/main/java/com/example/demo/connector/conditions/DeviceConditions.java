@@ -56,13 +56,13 @@ public class DeviceConditions extends SearchConditions{
         super.setOrderBy(orderBy);
         switch (orderBy){
             case 1:
-                sort = new Sort(Sort.Direction.ASC, "deviceType");
+                sort = new Sort(Sort.Direction.DESC, "id");
                 break;
             case 2:
-                sort=new Sort(Sort.Direction.ASC, "createAt");
+                sort=new Sort(Sort.Direction.DESC, "creatTime");
                 break;
             case 3:
-                sort=new Sort(Sort.Direction.ASC, "updateAt");
+                sort=new Sort(Sort.Direction.DESC, "updateAt");
                 break;
             default:
                 sort=null;

@@ -6,7 +6,7 @@
 
 - 找到pom.xml文件右键maven下的reimport
 
-- 建立好mysql数据库
+- 建立好mysql数据库(如果之前有数据，请直接清空数据库之后，然后再进入下一个步骤)
 
 - 然后再使用根目录中的all.sql（通过mysqldump生成的）文件进行数据库初始化，如果是mysql shell在根目录登录进去source all.sql 就可以了，如果是其他的数据库软件请参照其他数据库软件的提示进行导入数据文件进行恢复
 

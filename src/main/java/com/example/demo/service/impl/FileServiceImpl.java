@@ -28,6 +28,7 @@ import java.util.Map;
 
 @Service
 public class FileServiceImpl implements FileService {
+
     @Autowired
     FileDao fileDao;
     @Autowired
@@ -112,7 +113,7 @@ public class FileServiceImpl implements FileService {
     public long form2pdf(Object form, int formType,long applyId) {
         JSONObject jsonObject=new JSONObject(form);
         long file_id=applyId*100+formType;
-        String path= FilePathUtil.getPathById(file_id);
+        String path= FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
         CloseableHttpClient client= HttpClients.createDefault();
         try {
             String url=env.getProperty("custome.fileConverter.serverUrl");

@@ -58,7 +58,7 @@ public class fileController extends BaseController {
         fileData.setId(file_id);
         fileData.setApplyId(apply_id);
         fileData.setFileName(fileName+".pdf");
-        String path = FilePathUtil.getPathById(file_id);
+        String path = FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
         FileOutputStream fos = new FileOutputStream(new File(path));
         MultipartFile file = multiReq.getFile("file");
         FileInputStream fs = (FileInputStream) file.getInputStream();
@@ -90,7 +90,7 @@ public class fileController extends BaseController {
     public void testDownload(HttpServletRequest request, HttpServletResponse response, @RequestParam("fileId") long
             file_id) throws Exception {
 
-        File file = new File(FilePathUtil.getPathById(file_id));
+        File file = new File(FilePathUtil.getPathById(file_id,env.getProperty("file.save.path")));
         //检查applyid是否是下载者的
         //validate.isPermission(SecurityUtils.getSubject(),fileService.getFileById(file_id).getApplyId());
         try {
@@ -129,7 +129,7 @@ public class fileController extends BaseController {
     public void preview(HttpServletRequest request, HttpServletResponse response, @RequestParam("fileId") long
             file_id)
             throws Exception {
-        File file = new File(FilePathUtil.getPathById(file_id));
+        File file = new File(FilePathUtil.getPathById(file_id,env.getProperty("file.save.path")));
         //检查applyid是否是下载者的
         //validate.isPermission(SecurityUtils.getSubject(),fileService.getFileById(file_id).getApplyId());
         String agent = request.getHeader("Applier-Agent");
@@ -159,7 +159,7 @@ public class fileController extends BaseController {
     @RequestMapping("/thumbnail")
     public void thumbnailImage(HttpServletResponse response, @RequestParam("fileId") long
             file_id) throws Exception {
-        String path = FilePathUtil.getPathById(file_id);
+        String path = FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
         response.setDateHeader("Expires", 0);
         response.setHeader("Cache-Control", "no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");

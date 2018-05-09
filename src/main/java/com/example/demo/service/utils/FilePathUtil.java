@@ -1,15 +1,21 @@
 package com.example.demo.service.utils;
 
 import com.example.demo.entity.data.ApplyInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
 public class FilePathUtil {
-    public static String getPathById(long id){
-        String path=ClassLoader.getSystemResource("").getPath();
-        path=path+"..//files//"+id/5000+"//";
+//    @Value("#{file_save_dir}")
+    public static String getPathById(long id,String path){
+//        String path=ClassLoader.getSystemResource("").getPath();
+//        String path=env.getProperty("file_save_dir");
+        path=path+id/5000+"//";
         File file=new File(path);
         if(!file.exists())
         {
