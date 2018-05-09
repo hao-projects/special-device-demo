@@ -77,7 +77,7 @@ public class DeviceSearchCondition extends MultiSearch {
 
         //query itself
         cq.select(customer)
-                .where(predicates.toArray(new Predicate[]{}));
+                .where(predicates.toArray(new Predicate[]{})).orderBy(qb.desc(customer.get("id")));
         //execute query and do something with result
         List<DeviceInfo> deviceInfos=em.createQuery(cq).getResultList();
 //        List<DeviceResponse>  deviceResponses=new ArrayList<>();

@@ -65,7 +65,7 @@ public class DeviceConditions extends SearchConditions{
                 sort=new Sort(Sort.Direction.DESC, "updateAt");
                 break;
             default:
-                sort=null;
+                sort = new Sort(Sort.Direction.DESC, "id");
         }
     }
 

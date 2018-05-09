@@ -66,7 +66,7 @@ public class ApplyController extends BaseController {
     JsonResponse getApplyList(@RequestBody ApplyConditions applyConditions) throws Exception {
 
         long userId = statusService.getCurrUserId(getSession());
-
+        applyConditions.setOrderBy(1);//default order by desc id
         applyConditions.setUserId(userId);
         ApplySearchCondition searchCondition = new ApplySearchCondition(applyConditions);
         Pageable pageable = new PageRequest(applyConditions.getPage(), applyConditions.getSize(), applyConditions.getSort());
@@ -104,6 +104,7 @@ public class ApplyController extends BaseController {
     JsonResponse getWorkFlow(@RequestBody ApplyConditions applyConditions) throws Exception {
         long userId = statusService.getCurrUserId(getSession());
         applyConditions.setUserId(userId);
+        applyConditions.setOrderBy(1);
         ApplySearchCondition searchCondition = new ApplySearchCondition(applyConditions);
         Pageable pageable = new PageRequest(applyConditions.getPage(), applyConditions.getSize(), applyConditions.getSort());
         CustomePage<WorkFlowInfo> applyInfos = searchCondition.result(searchCondition.convert2Workflow(em), pageable);

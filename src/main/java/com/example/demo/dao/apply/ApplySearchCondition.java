@@ -8,6 +8,7 @@ import com.example.demo.entity.data.ApplyStatus;
 import com.example.demo.connector.responser.WorkFlowInfo;
 import com.example.demo.enums.RoleTypeEnum;
 import com.example.demo.service.multiSearch.MultiSearch;
+import org.hibernate.criterion.Order;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -66,10 +67,9 @@ public class ApplySearchCondition extends MultiSearch {
                     qb.equal(customer.get("ownerId"), conditions.getUserId()));
             }
         }
-
         //query itself
         cq.select(customer)
-                .where(predicates.toArray(new Predicate[]{}));
+                .where(predicates.toArray(new Predicate[]{})).orderBy(qb.desc(customer.get("id")));
         //execute query and do something with result
         List<ApplyInfo> applyInfos=em.createQuery(cq).getResultList();
 

@@ -51,6 +51,7 @@ public class DeviceController extends BaseController{
     JsonResponse getDeviceLists(@RequestBody DeviceConditions conditions)throws Exception{
         long id=statusService.getCurrUserId(getSession());
         conditions.setUserId(id);
+        conditions.setOrderBy(1);
         if(!conditions.isProcessing()){
             conditions.setViewAll(false);
         }

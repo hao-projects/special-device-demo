@@ -205,7 +205,9 @@ public class Form implements Serializable {
     }
 
     public String getNextTestDate() {
-        return nextTestDate.substring(0,8);
+        if(nextTestDate.length()>8)
+            return nextTestDate.substring(0,8);
+        return nextTestDate;
     }
 
     public void setNextTestDate(Date nextTestDate) {
