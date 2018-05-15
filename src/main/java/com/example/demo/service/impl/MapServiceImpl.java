@@ -1,9 +1,9 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.Dao.map.DistrictDao;
-import com.example.demo.Dao.map.OrganizationDao;
-import com.example.demo.entity.dataModel.District;
-import com.example.demo.entity.dataModel.Organization;
+import com.example.demo.dao.map.DistrictDao;
+import com.example.demo.dao.map.OrganizationDao;
+import com.example.demo.entity.data.District;
+import com.example.demo.entity.data.Organization;
 import com.example.demo.service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,17 @@ import java.util.List;
 public class MapServiceImpl implements MapService {
     @Autowired
     private DistrictDao districtDao;
-
     @Autowired
     private OrganizationDao organizationDao;
+    @Override
+    public  Organization findOrganizationById(long id){
+        return organizationDao.findOrganizationById((int)id);
+    }
+
+    @Override
+    public District findDistrictByCode(String code) {
+        return districtDao.findFirstByCode(code);
+    }
 
     @Override
     public List<District> findAllProvince() {
@@ -34,7 +42,7 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
-    public List<District> findAllArea(String code ) {
+    public List<District> findAllArea(String code) {
         int level = 3;
         String subCode = code.substring(0,4);
         code = subCode + "%";
@@ -42,27 +50,17 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
-    public List<Organization> findAllOrganization(String code, int level) {
-        List<Organization> results = new ArrayList<Organization>();
-        String code_province;
-        switch (level){
-            case 2:
-                String codelike =  code.substring(0,4) + "%";
-                results.addAll(organizationDao.findByDistrictCodeLike(codelike));
-                code_province = code.substring(0,2) + "0000";
-                results.addAll(organizationDao.findByDistrictCode(code_province));
-                break;
-            case 3:
-                results.addAll(organizationDao.findByDistrictCode(code));
-                String code_city = code.substring(0,4)+"00";
-                results.addAll(organizationDao.findByDistrictCode(code_city));
-                code_province = code.substring(0,2) + "0000";
-                results.addAll(organizationDao.findByDistrictCode(code_province));
-                break;
-
+    public List<Organization> findOrganizationsByCode(String code) {
+        List<Organization> organizations=new ArrayList<>();
+        organizations.addAll(organizationDao.findByDistrictCode(code.substring(0,2)+"0000"));
+        if((Integer.parseInt(code)%100)==0){
+            organizations.addAll(organizationDao.findByDistrictCodeLike(code.substring(0,4)+"%"));
         }
-        return results;
+        else {
+            organizations.addAll(organizationDao.findByDistrictCode(code.substring(0,4)+"00"));
+            organizations.addAll(organizationDao.findByDistrictCode(code));
+        }
+        return organizations;
+
     }
-
-
 }

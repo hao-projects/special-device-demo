@@ -1,7 +1,7 @@
 package com.example.demo.web;
 
-import com.example.demo.entity.dataModel.District;
-import com.example.demo.entity.dataModel.Organization;
+import com.example.demo.entity.data.District;
+import com.example.demo.entity.data.Organization;
 import com.example.demo.service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-
+/**
+ * @author yang
+ * @create_at 2017/10/17
+ **/
 @Controller
 @RequestMapping("/map")
 public class MapController {
@@ -42,16 +45,8 @@ public class MapController {
         return mapService.findAllArea(code);
     }
 
-    @RequestMapping(value = "/organizations",method = RequestMethod.GET)
-    public @ResponseBody
-    List<Organization> getAllOrganization(@RequestParam("code")String code){
-
-        int level = 3;//level=1:省，level=2市,level=3县
-        String patternArea = "\\d{4}00";
-        if(code.matches(patternArea)){
-            level = 2;
-        }
-        return mapService.findAllOrganization(code,level);
-
+    @RequestMapping("/organization")
+    public @ResponseBody List<Organization> getOrganizations(@RequestParam("addressCode")String code){
+        return mapService.findOrganizationsByCode(code);
     }
 }

@@ -1,27 +1,14 @@
 package com.example.demo.web;
 
 
-import com.example.demo.entity.userModel.UserInfo;
+import com.example.demo.entity.user.UserInfo;
 import com.example.demo.enums.JsonResponse;
 import com.example.demo.service.KaptchaService;
-import com.example.demo.service.UserService;
 import com.example.demo.service.UserStatusService;
-import com.example.demo.service.ValidateService;
-import com.example.demo.service.exception.KaptchaFailException;
-import com.example.demo.service.exception.ValidateFailException;
-import com.google.code.kaptcha.Constants;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
 
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,21 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by yang on 2017/8/10.
- */
+ * @author yang
+ * @create_at 2017/10/17
+ **/
 @Controller
 public class HomeController {
 
@@ -62,7 +43,7 @@ public class HomeController {
 
         SecurityUtils.getSubject().logout();
 
-        return new JsonResponse(true,null,null);
+        return new JsonResponse();
 
     }
 
@@ -102,7 +83,7 @@ public class HomeController {
         Map<String, Object> data = new HashMap<>();
         Subject currentuser = SecurityUtils.getSubject();
         if (currentuser.isAuthenticated()) {
-            jsonResponse.setStatus(true);
+            jsonResponse.setStatus(200);
             //这里要把获取角色的方法要放到service里
             UserInfo userInfo = userStatusService.getCurrUser(currentuser.getSession());
             data.put("username", userInfo.getUsername());
@@ -111,7 +92,7 @@ public class HomeController {
             return jsonResponse;
         } else {
             UsernamePasswordToken uptoken = new UsernamePasswordToken(username, password);
-            // kaptchaService.KaptchaValidate(currentuser, vertifycode);
+            kaptchaService.KaptchaValidate(currentuser, vertifycode);
             currentuser.login(uptoken);
             return adminlogin(username,password,vertifycode,request);
         }

@@ -3,35 +3,21 @@ package com.example.demo.config;
 /**
  * Created by yang on 2017/7/26.
  */
-import com.example.demo.entity.userModel.SysPermission;
-import com.example.demo.entity.userModel.SysRole;
-import com.example.demo.entity.userModel.UserInfo;
+import com.example.demo.entity.user.SysPermission;
+import com.example.demo.entity.user.SysRole;
+import com.example.demo.entity.user.UserInfo;
 import com.example.demo.service.UserService;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.UnknownSessionException;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
-import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.util.ByteSource;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.io.Serializable;
-import java.util.Collection;
 
 public class ShiroRealm extends AuthorizingRealm {
     @Resource
@@ -42,7 +28,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
+      //  System.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         String username=(String)principals.getPrimaryPrincipal();
         UserInfo userInfo  = userInfoService.findByUsername(username);
@@ -86,7 +72,7 @@ public class ShiroRealm extends AuthorizingRealm {
             throws AuthenticationException {
     String username = (String)token.getPrincipal();
 
-    System.out.println("MyShiroRealm.doGetAuthenticationInfo()");
+    //System.out.println("MyShiroRealm.doGetAuthenticationInfo()");
 
     UserInfo userInfo = userInfoService.findByUsername(username);
     if(userInfo == null){

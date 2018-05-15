@@ -1,15 +1,15 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.Dao.apply.ApplyInfoDao;
-import com.example.demo.entity.dataModel.ApplyInfo;
-import com.example.demo.entity.userModel.UserInfo;
-import com.example.demo.service.ApplyService;
+import com.example.demo.dao.apply.ApplyInfoDao;
+import com.example.demo.entity.data.ApplyInfo;
+import com.example.demo.entity.user.UserInfo;
+import com.example.demo.enums.ApplyStatesEnum;
 import com.example.demo.service.UserStatusService;
+import com.example.demo.service.Validatable;
 import com.example.demo.service.ValidateService;
 import com.example.demo.service.exception.NotFoundException;
 import com.example.demo.service.exception.ValidateFailException;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ValidateServiceImpl implements ValidateService {
     @Autowired
-    private ApplyInfoDao applyInfoDao;
-    @Autowired
     private UserStatusService userStatusService;
     @Override
     public boolean validateForm() {
@@ -28,35 +26,35 @@ public class ValidateServiceImpl implements ValidateService {
     }
 
     @Override
-    public void isPermission(Session session,ApplyInfo applyInfo){
+    public void isPermission(Session session,Validatable validate){
         try {
-            if (applyInfo.getId() != 0) {
-                if (!isApplyOwner(session, applyInfo))
-                    throw new ValidateFailException("你没有权限查看");
+            if (validate != null) {
+                if (!isApplyOwner(session, validate))
+                {  throw new ValidateFailException("你没有权限查看");}
             } else
-                throw new ValidateFailException("查看的资料非法或参数传输不正确");
+            { throw new ValidateFailException("查看的资料非法或参数传输不正确");}
 
         }catch (NullPointerException e){
             throw new NotFoundException("can not find the object that you want");
         }
     }
-    public boolean isApplyOwner(Session session,ApplyInfo applyInfo) {
+    public boolean isApplyOwner(Session session,Validatable validate) {
 
         UserInfo userInfo=userStatusService.getCurrUser(session);
-        //1. user 2. acceptor 3.approver 4.supervisor 5.admin
+        //1. Applier 2. acceptor 3.approver 4.supervisor 5.admin
         switch (userInfo.getRoleList().get(0).getId())
         {
             case 1:
-                return userInfo.getUid()==applyInfo.getOwnerId();
-
+                return userInfo.getUid()==validate.getOwnerId();
             case 2:
-                return userInfo.getAgencyId()==applyInfo.getAcceptorAgencyId();
+                return userInfo.getAgencyId()==validate.getAcceptorAgencyId();
 
             case 3:
-                return userInfo.getAgencyId()==applyInfo.getApproverAgencyId();
+                return userInfo.getAgencyId()==validate.getAcceptorAgencyId();
+            default:
+                return true;
 
         }
-        return true;
 
     }
 //    public void validateApplyOwner(Session session, ApplyInfo applyInfo) throws ValidateFailException{

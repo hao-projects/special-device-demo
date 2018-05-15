@@ -1,13 +1,18 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.userModel.UserInfo;
+import com.example.demo.enums.Constants;
 import com.example.demo.service.RedisService;
-import com.example.demo.service.exception.NotFoundException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.UnknownSessionException;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -48,6 +53,11 @@ public class RedisServiceImpl implements RedisService{
 
     @Override
     public void deleteByKey(String key) {
-
+        redisTemplate.delete(key);
     }
+
+    @Override
+    public void incr(String key) {
+    }
+
 }

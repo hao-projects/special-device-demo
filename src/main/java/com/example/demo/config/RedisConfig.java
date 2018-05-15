@@ -1,20 +1,14 @@
 package com.example.demo.config;
 
-import com.example.demo.entity.userModel.UserInfo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -22,13 +16,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport {
-
+    @Autowired
+    private org.springframework.core.env.Environment env;
 
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory connectionFactory= new JedisConnectionFactory();
-        connectionFactory.setHostName("10.210.59.79");
-        connectionFactory.setPort(6379);
+        connectionFactory.setHostName(env.getProperty("spring.redis.host"));
+        connectionFactory.setPort(env.getRequiredProperty("spring.redis.port",Integer.class));
         return connectionFactory;
     }
     //如果在applicationContext中配置redisConnectionFactory那么加@autowired 和传入redisConnectionFactory类型参数如果如上直接配置就不用了。
@@ -39,7 +34,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         template.setConnectionFactory(jedisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
        // template.setValueSerializer(new JdkSerializationRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
+        //template.setHashKeySerializer(new StringRedisSerializer());
         //template.setHashValueSerializer(new JdkSerializationRedisSerializer());
 
         return template;
@@ -48,7 +43,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     public CacheManager  cacheManager(RedisTemplate redisTemplate) {
         SpringRedisCacheManager cacheManager = new SpringRedisCacheManager(redisTemplate);
         // Number of seconds before expiration. Defaults to unlimited (0)
-        cacheManager.setDefaultExpiration(20L);// Sets the default expire time (in seconds)
+        cacheManager.setDefaultExpiration(1800L);// Sets the default expire time (in seconds)
         return cacheManager;
     }
     /**
@@ -69,8 +64,6 @@ public class RedisConfig extends CachingConfigurerSupport {
             return sb.toString();
         };
     }
-
-
     @Override
     public KeyGenerator keyGenerator() {
         return customKeyGenerator();

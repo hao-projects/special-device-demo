@@ -1,148 +1,209 @@
 package com.example.demo.web;
 
-import com.example.demo.config.DatabaseForDataConfig;
-import com.example.demo.entity.dataModel.ApplyInfo;
-import com.example.demo.entity.dataModel.ApplyStatus;
-import com.example.demo.enums.ApplyConditions;
-import com.example.demo.enums.CustomePage;
+import com.example.demo.connector.responser.ApplyResponse;
+import com.example.demo.connector.conditions.ApplyConditions;
+import com.example.demo.connector.responser.WorkFlowInfo;
+import com.example.demo.connector.updater.ApplyUpdater;
+import com.example.demo.connector.updater.DropOrStopApplyHandler;
+import com.example.demo.entity.data.ApplyInfo;
+import com.example.demo.entity.data.ApplyStatus;
+import com.example.demo.entity.form.Form;
+import com.example.demo.entity.form.SubForm;
+import com.example.demo.enums.FormTypeEnum;
 import com.example.demo.enums.JsonResponse;
-import com.example.demo.enums.MyPage;
-import com.example.demo.Dao.apply.ApplySearchCondition;
+import com.example.demo.dao.apply.ApplySearchCondition;
+import com.example.demo.enums.CustomePage;
 import com.example.demo.service.ApplyService;
+import com.example.demo.service.DeviceService;
 import com.example.demo.service.UserStatusService;
-import com.example.demo.service.exception.ValidateFailException;
-import com.example.demo.service.staticfunction.UtilServiceImpl;
-import com.example.demo.service.view.View;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.example.demo.service.utils.UtilServiceImpl;
+
 import org.apache.shiro.SecurityUtils;
-import org.hibernate.annotations.Source;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.session.Session;
+import org.hibernate.Hibernate;
 import org.json.JSONObject;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
 
 import javax.persistence.EntityManager;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
- * Created by yang on 2017/7/27.
- */
+ * @author yang
+ * @create_at 2017/10/17
+ **/
 @Controller
 @RequestMapping("/apply")
-
-public class ApplyController {
+@RequiresPermissions("user:normal")
+public class ApplyController extends BaseController {
     @Autowired
     @Qualifier(value = "productEntityManager")
     private EntityManager em;
     @Autowired
-    ApplyService applyService;
+    private ApplyService applyService;
     @Autowired
-    UserStatusService statusService;
+    private UserStatusService statusService;
 
-    @RequestMapping(value = "/get",method = RequestMethod.POST)
-    @JsonView(View.ApplyForView.class)
+    @RequestMapping(value = "/get", method = RequestMethod.POST)
+    //@JsonView(View.ApplyForView.class)
     public @ResponseBody
     JsonResponse getApplyList(@RequestBody ApplyConditions applyConditions) throws Exception {
-//        long start = 0;
-//        long end = UtilServiceImpl.date2Long(new Date());
-//        String format = "yyyy-MM-dd";
-//        if(applySearchCondition.getTime()!=null)
-//        {   String[] time= applySearchCondition.getTime();
-//            start=UtilServiceImpl.string2Long(time[0],format);
-//            end=UtilServiceImpl.string2Long(time[1],format)+ 86400000;
-//        }
 
-        long userId=statusService.getCurrUserId(SecurityUtils.getSubject().getSession());
-
+        long userId = statusService.getCurrUserId(getSession());
+        applyConditions.setOrderBy(1);//default order by desc id
         applyConditions.setUserId(userId);
-//        try {
-//            Enumeration<String> queryNames=request.getParameterNames();
-//            while(queryNames.hasMoreElements())
-//            {   String query=queryNames.nextElement();
-//                Integer.parseInt(request.getParameter(query));
-//            }
-//
-//            page = Integer.parseInt(request.getParameter("page"));
-//            size = Integer.parseInt(request.getParameter("size"));
-//            device_id = Integer.parseInt(request.getParameter("deviceId"));
-//            JSONArray json = new JSONArray(request.getParameter("time"));
-//            orderby=Integer.parseInt(request.getParameter("OrderBy"));
-//            start = UtilServiceImpl.string2Long(json.getString(0), format);
-//            //end要加一天的时间
-//            end = UtilServiceImpl.string2Long(json.getString(1), format) + 86400000;
-//        }catch (Exception e)
-//        {//do nothing maybe the format is not suitable
-//            e.printStackTrace();
-//        }
-        ApplySearchCondition searchCondition=new ApplySearchCondition(applyConditions);
-        Sort sort = null;
-        switch (applyConditions.getOrderBy()){
-            case 1:
-                sort = new Sort(Sort.Direction.ASC, "id");
-                break;
-            case 2:
-                sort=new Sort(Sort.Direction.ASC, "createAt");
-                break;
-            case 3:
-                sort=new Sort(Sort.Direction.ASC, "updateAt");
-                break;
-        }
-
-        Pageable pageable = new PageRequest(applyConditions.getPage(), applyConditions.getSize(), sort);
-        CustomePage<ApplyInfo> applyInfos = searchCondition.result(searchCondition.searchByConditions(em),pageable);
-        return new JsonResponse(true,null,applyInfos);
+        ApplySearchCondition searchCondition = new ApplySearchCondition(applyConditions);
+        Pageable pageable = new PageRequest(applyConditions.getPage(), applyConditions.getSize(), applyConditions.getSort());
+        CustomePage<ApplyResponse> applyInfos = searchCondition.result(searchCondition.converter2ApplyResponse(em), pageable);
+        return new JsonResponse(200, null, applyInfos);
 
     }
 
+    @Transactional
     @RequestMapping(value = "/get", method = RequestMethod.GET)
-    public @ResponseBody
-    JsonResponse     getApply(@RequestParam("applyId") long id) {
-        JSONObject object=new JSONObject( applyService.findByApplyID(id,SecurityUtils.getSubject()
-                .getSession()));
-        System.out.println(object.toString());
-        //return applyService.findByApplyID(id,SecurityUtils.getSubject().getSession());
-        return new JsonResponse(true, null, applyService.findByApplyID(id,SecurityUtils.getSubject().getSession()));
-
+    @ResponseBody
+    public JsonResponse getApplyAPI(@RequestParam(value = "applyId", required = false) String id, @RequestParam(value = "eqCode", required = false) String eqCode) {
+        ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(id, eqCode);
+        return new JsonResponse(200, null, applyInfo);
     }
 
+    @Transactional
+    public ApplyInfo getApply(String applyId, String eqCode) {
+        ApplyInfo applyInfo = null;
+        if (applyId != null) {
+            applyInfo = applyService.findByApplyID(Long.parseLong(applyId), getSession());
+        } else {
+            applyInfo = applyService.findApplyByEqCode(eqCode,getSession());
+        }
+        if (applyInfo != null) {
+            for (Form form : applyInfo.getFormList()) {
+                new JSONObject(form).toString();
+            }
+        }
+        return applyInfo;
+    }
+
+    @RequestMapping(value = "/getWorkFlow", method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse getWorkFlow(@RequestBody ApplyConditions applyConditions) throws Exception {
+        long userId = statusService.getCurrUserId(getSession());
+        applyConditions.setUserId(userId);
+        applyConditions.setOrderBy(1);
+        ApplySearchCondition searchCondition = new ApplySearchCondition(applyConditions);
+        Pageable pageable = new PageRequest(applyConditions.getPage(), applyConditions.getSize(), applyConditions.getSort());
+        CustomePage<WorkFlowInfo> applyInfos = searchCondition.result(searchCondition.convert2Workflow(em), pageable);
+        return new JsonResponse(200, null, applyInfos);
+    }
+
+    @RequestMapping(value = {"/drop", "/disable"}, method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse createDropOrDisableApply(@RequestBody DropOrStopApplyHandler handler) {
+        ApplyInfo applyInfo = handler.getApply();
+        applyInfo = applyService.createApply(applyInfo, statusService.getCurrUserId(getSession()));
+        Map<String, String> map = new HashMap<>();
+        map.put("applyId", applyInfo.getId() + "");
+        map.put("forms", applyInfo.getForms().toString());
+        return new JsonResponse(200, null, map);
+
+    }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse createApply(@RequestBody ApplyInfo applyInfo) throws Exception {
-
         applyInfo.setCreateTime(UtilServiceImpl.date2Long(new Date()));
-        //System.out.println(new JSONObject(applyInfo.getForm1()).toString());
-        applyInfo.setApplyStatus(new ApplyStatus());
-        applyService.createApply(applyInfo,statusService.getCurrUserId(SecurityUtils.getSubject().getSession()));
-        return new JsonResponse(true, null, null);
-
+        applyInfo.setStatus(new ApplyStatus());
+        applyInfo = applyService.createApply(applyInfo, statusService.getCurrUserId(getSession()));
+        Map<String, String> map = new HashMap<>();
+        map.put("applyId", applyInfo.getId() + "");
+        map.put("forms", applyInfo.getForms().toString());
+        return new JsonResponse(200, null, map);
 
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public
-    JsonResponse delApply(@RequestParam("applyId") long id) throws RuntimeException{
-        applyService.delApply(id,SecurityUtils.getSubject().getSession());
-        return new JsonResponse(true, null, null);
+    public @ResponseBody
+    JsonResponse delApply(@RequestParam("applyId") long id) throws RuntimeException {
+        applyService.delApply(id, SecurityUtils.getSubject().getSession());
+        return new JsonResponse();
 
     }
+
+    @RequestMapping(value = "/cancel", method = RequestMethod.GET)
+    public @ResponseBody
+    JsonResponse cancelApply(@RequestParam("applyId") long id) throws RuntimeException {
+        applyService.cancelApply(id, SecurityUtils.getSubject().getSession());
+        return new JsonResponse();
+
+    }
+
+    @Transactional
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public @ResponseBody
-    JsonResponse updateApply(@RequestBody ApplyInfo applyInfo) throws RuntimeException{
+    JsonResponse updateApply(@RequestBody ApplyUpdater updater) throws RuntimeException {
+        Session session = getSession();
+        ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(updater.getId() + "", null);
+        updater.update(applyInfo);
+        ApplyInfo applyInfo1 = applyService.updateForm(applyInfo, session);
+        Map<String, Object> map = new HashMap<>();
+        map.put("applyId", applyInfo1.getId() + "");
+        map.put("forms", applyInfo1.getForms());
+        map.put("files", applyInfo1.getFiles());
+        return new JsonResponse(200, null, map);
+    }
 
-        applyService.saveApply(applyInfo,SecurityUtils.getSubject().getSession());
-        return new JsonResponse(true, null, null);
+    @Transactional
+    @RequestMapping(value = "/uploadData", method = RequestMethod.POST)
+    public @ResponseBody
+    Callable<JsonResponse> updateApplyWithFile(MultipartHttpServletRequest request, @RequestParam(name = "applyId") long applyId) throws Exception {
+        return () -> {
+            ApplyInfo applyInfo = applyService.updateApply(request.getFile("file"), applyId, getSession());
+            Map<String, String> data = new HashMap<>();
+            long file_id;
+            if (applyInfo.getForms().get(FormTypeEnum.气瓶基本信息汇总表) != null) {
+                file_id = applyInfo.getForms().get(FormTypeEnum.气瓶基本信息汇总表);
+            } else {
+                file_id = applyInfo.getForms().get(FormTypeEnum.压力管道基本信息汇总表);
+            }
+            data.put("thumbnail", "/file/thumbnail?fileId=" + (file_id + ""));
+            data.put("preview", "/file/preview?fileId=" + (file_id + ""));
+            data.put("download", "/file/download?fileId=" + (file_id + ""));
+            return new JsonResponse(200, null, data);
+        };
+        //getApply(applyInfo.getId()+"",null);
+    }
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @RequestMapping(value = "/confirm", method = RequestMethod.GET)
+    public @ResponseBody
+    JsonResponse confirmApply(@RequestParam("applyId") long id) throws Exception {
+        Session session = getSession();
+        applyService.confirmApply(id, session);
+        ApplyInfo applyInfo = applyService.findByApplyID(id, session);
+        return new JsonResponse();
 
     }
-    @RequestMapping(value = "/confirm",method = RequestMethod.GET)
-    public @ResponseBody JsonResponse confirmApply(@RequestParam("applyId") long id)throws Exception{
-        applyService.confirmApply(id,SecurityUtils.getSubject().getSession());
-        return new JsonResponse(true, null, null);
-
-    }
+//    @RequestMapping(value = "/formPreview",method = RequestMethod.GET)
+//    public void previewForms(@RequestParam("formId")int formId,@RequestParam("applyId")int applyId){
+//        ApplyInfo applyInfo=new ApplyInfo();
+//
+//    }
 
 }

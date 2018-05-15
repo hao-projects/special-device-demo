@@ -1,10 +1,7 @@
 package com.example.demo.service.multiSearch;
 
-import com.example.demo.enums.ApplyConditions;
 import com.example.demo.enums.CustomePage;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -22,6 +19,11 @@ public abstract class MultiSearch<T> {
         int start = pageable.getOffset();
         int end = (start + pageable.getPageSize()) > listObject.size() ? listObject.size() : (start + pageable.getPageSize());
         return new CustomePage<T>(listObject.subList(start,end),pageable,listObject.size());
+
+    }
+    public CustomePage<T> result(List<T> listObject)throws Exception{
+
+        return new CustomePage<T>(listObject,null,listObject.size());
 
     }
 

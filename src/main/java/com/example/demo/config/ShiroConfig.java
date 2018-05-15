@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.service.impl.RedisServiceImpl;
+import com.example.demo.service.impl.RedisSessionDao;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -9,8 +11,12 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import java.util.LinkedHashMap;
@@ -20,11 +26,9 @@ import java.util.Properties;
 
 @Configuration
 public class ShiroConfig {
-
-
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
-        System.out.println("ShiroConfiguration.shirFilter()");
+       // System.out.println("ShiroConfiguration.shirFilter()");
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //拦截器.
@@ -88,9 +92,9 @@ public class ShiroConfig {
 
     @Bean
     public SessionDAO sessionDAO() {
-        MemorySessionDAO sessionDAO = new MemorySessionDAO();
+        //MemorySessionDAO sessionDAO = new MemorySessionDAO();
+        RedisSessionDao sessionDAO=new RedisSessionDao();
         return sessionDAO;
-
     }
 
     /**
