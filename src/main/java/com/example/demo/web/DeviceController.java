@@ -21,8 +21,10 @@ import org.apache.shiro.session.Session;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,11 +62,15 @@ public class DeviceController extends BaseController{
         if(conditions.getSize()==0){
              devices= searchCondition.result(searchCondition.searchByConditions(em));
         }else{
-        Pageable pageable = new PageRequest(conditions.getPage(), conditions.getSize(), conditions.getSort());
+            Pageable pageable = new PageRequest(conditions.getPage(), conditions.getSize(), conditions.getSort());
             devices = searchCondition.result(searchCondition.searchByConditions(em),pageable);}
         return new JsonResponse(200,null,devices);
 
     }
+
+
+
+
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     public @ResponseBody
     JsonResponse getDevice(@RequestParam(name = "deviceId")long deviceId){
