@@ -29,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,7 +69,19 @@ public class DeviceController extends BaseController{
 
     }
 
+    @RequestMapping(value = "/getExcel",method = RequestMethod.GET)
+    public void getDeviceLists2Excel(){
+        long id=statusService.getCurrUserId(getSession());
+        DeviceConditions conditions = new DeviceConditions();
+        DeviceSearchCondition searchCondition=new DeviceSearchCondition(conditions);
+        try {
+            List<? extends DeviceInfo> deviceInfos = new ArrayList<DeviceInfo>();
+            deviceInfos = searchCondition.searchByConditions(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
 
 
     @RequestMapping(value = "/get",method = RequestMethod.GET)

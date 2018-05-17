@@ -152,4 +152,9 @@ public class FileServiceImpl implements FileService {
         }
 
     }
+
+    public void deviceLists2Excel(){
+
+    }
+
 }
