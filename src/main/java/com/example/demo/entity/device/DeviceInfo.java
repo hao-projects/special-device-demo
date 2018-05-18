@@ -20,28 +20,28 @@ public class DeviceInfo implements Serializable,Validatable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String eqCode;
-    private String comCode;
+    private String eqCode;    //设备代码
+    private String comCode;   //单位内编号
     private DeviceTypeEnum deviceType;
     private long deviceSerialNum;
     private String deviceCode;
     private int     deviceTypeId;
-    private String deviceCategory;
-    private String deviceClass;
-    private String deviceKind;
+    private String deviceCategory; //设备种类
+    private String deviceClass;    //设备类别
+    private String deviceKind;     //设备品种
     private String noUseDate;
     private String noUseEndDate;
     private String disableDate;
     private String issueDate;
     private String comTablePerson;
-    private String acceptorAgencyName;
+    private String acceptorAgencyName;    //登记机关
     private String registPerson;
     private String productCode;
     private String useComName;
     private String eqUseAddr;
     private String nextTestDate;
     @Column(unique = true)
-    private String registCode;
+    private String registCode;     //使用登记证编号
     private DeviceStatesEnum deviceStates=DeviceStatesEnum.在用;
     private long ownerId;
     private String ownerComName;
