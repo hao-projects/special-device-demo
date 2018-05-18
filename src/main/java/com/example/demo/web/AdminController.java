@@ -212,6 +212,11 @@ public class AdminController extends BaseController {
         return getApplies(applyConditions);
     }
 
+    @RequestMapping(value = "/approvedApplies/getExcel", method = RequestMethod.GET)
+    public void  getapprovedApplies2Excel(){
+
+    }
+
     @Autowired
     private ApplyService applyService;
 
