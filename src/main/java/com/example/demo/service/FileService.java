@@ -18,5 +18,5 @@ public interface FileService {
     void    delete(FileData fileData);
     Map<FormTypeEnum,Long> createPdf(ApplyInfo applyInfo);
     long form2pdf(Object form,int form_type,long apply_id) ;
-    void deviceLists2Excel(List<? extends DeviceInfo> deviceInfos);
+    void deviceLists2Excel(List<? extends DeviceInfo> deviceInfos) ;
 }
