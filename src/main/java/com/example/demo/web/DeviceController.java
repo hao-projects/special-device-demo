@@ -16,6 +16,8 @@ import com.example.demo.service.FileService;
 import com.example.demo.service.UserStatusService;
 import com.example.demo.service.exception.CustomException;
 import com.example.demo.service.impl.FileServiceImpl;
+import com.example.demo.service.utils.FilePathUtil;
+import com.example.demo.service.utils.UtilServiceImpl;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -31,6 +33,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,13 +82,26 @@ public class DeviceController extends BaseController{
     }
 
     @RequestMapping(value = "/getExcel",method = RequestMethod.GET)
-    public void getDeviceLists2Excel(){
+    public void getDeviceLists2Excel(HttpServletRequest request, HttpServletResponse response){
         long id=statusService.getCurrUserId(getSession());
         DeviceConditions conditions = new DeviceConditions();
         DeviceSearchCondition searchCondition=new DeviceSearchCondition(conditions);
+        File file = new File(env.getProperty("file.excel.path"));
+        List<? extends DeviceInfo> deviceInfos = null;
         try {
-            List<? extends DeviceInfo> deviceInfos = searchCondition.searchByConditions(em);
-            fileService.deviceLists2Excel(deviceInfos);
+            deviceInfos = searchCondition.searchByConditions(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fileService.deviceLists2Excel(deviceInfos);
+        try(OutputStream os = response.getOutputStream();
+            FileInputStream fo = new FileInputStream(file)) {
+            response.setHeader("content-type", "application/octet-stream");
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment");
+            byte[] bis = UtilServiceImpl.readStream(fo);
+            os.write(bis);
+            os.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }

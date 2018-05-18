@@ -161,13 +161,11 @@ public class FileServiceImpl implements FileService {
 
     }
 
-    public void deviceLists2Excel(List<? extends DeviceInfo> deviceInfoList){
+    public void deviceLists2Excel(List<? extends DeviceInfo> deviceInfoList) {
         String path= env.getProperty("file.excel.path");
         String filePath = path + "template.xls";
-        OutputStream outputStream ;
-        try {
-            File file = new File(filePath);
-            outputStream = new FileOutputStream(file);
+        File file = new File(filePath);
+        try(OutputStream outputStream = new FileOutputStream(file)) {
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("Sheet1");
             HSSFRow row = sheet.createRow(0);
@@ -230,8 +228,6 @@ public class FileServiceImpl implements FileService {
             workbook.write(outputStream);
         }catch (Exception e){
             e.printStackTrace();
-        }finally {
-            outputStream.close();
         }
 
     }
