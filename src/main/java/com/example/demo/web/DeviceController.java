@@ -12,8 +12,10 @@ import com.example.demo.entity.form.SubForm;
 import com.example.demo.enums.CustomePage;
 import com.example.demo.enums.JsonResponse;
 import com.example.demo.service.DeviceService;
+import com.example.demo.service.FileService;
 import com.example.demo.service.UserStatusService;
 import com.example.demo.service.exception.CustomException;
+import com.example.demo.service.impl.FileServiceImpl;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -47,6 +49,8 @@ public class DeviceController extends BaseController{
     private DeviceService deviceService;
     @Autowired
     private UserStatusService statusService;
+    @Autowired
+    private FileService fileService;
 
 
     @RequestMapping(value = "/get",method = RequestMethod.POST)
@@ -75,8 +79,8 @@ public class DeviceController extends BaseController{
         DeviceConditions conditions = new DeviceConditions();
         DeviceSearchCondition searchCondition=new DeviceSearchCondition(conditions);
         try {
-            List<? extends DeviceInfo> deviceInfos = new ArrayList<DeviceInfo>();
-            deviceInfos = searchCondition.searchByConditions(em);
+            List<? extends DeviceInfo> deviceInfos = searchCondition.searchByConditions(em);
+            fileService.deviceLists2Excel(deviceInfos);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,18 +1,23 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.Consts.ExcelTitle;
 import com.example.demo.dao.file.FileDao;
 import com.example.demo.entity.data.ApplyInfo;
 import com.example.demo.entity.data.FileData;
+import com.example.demo.entity.device.DeviceInfo;
 import com.example.demo.entity.form.*;
 import com.example.demo.enums.FormTypeEnum;
 import com.example.demo.service.FileService;
 import com.example.demo.service.exception.FileFailException;
 import com.example.demo.service.utils.FilePathUtil;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -21,8 +26,11 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 @PropertySource({"classpath:application.properties"})
 
@@ -153,7 +161,78 @@ public class FileServiceImpl implements FileService {
 
     }
 
-    public void deviceLists2Excel(){
+    public void deviceLists2Excel(List<? extends DeviceInfo> deviceInfoList){
+        String path= env.getProperty("file.excel.path");
+        String filePath = path + "template.xls";
+        OutputStream outputStream ;
+        try {
+            File file = new File(filePath);
+            outputStream = new FileOutputStream(file);
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("Sheet1");
+            HSSFRow row = sheet.createRow(0);
+            for(Pair<Integer, String> p : ExcelTitle.getTotalDeviceFormTitle()){
+                row.createCell(p.getLeft()).setCellValue(p.getRight());
+            }
+            int i = 1;
+            for(DeviceInfo deviceInfo:deviceInfoList){
+                HSSFRow tmp = sheet.createRow(i);
+            }
+            row.createCell(0).setCellValue("id");
+            row.createCell(1).setCellValue("订单号");
+            row.createCell(2).setCellValue("下单时间");
+            row.createCell(3).setCellValue("个数");
+            row.createCell(4).setCellValue("单价");
+            row.createCell(5).setCellValue("订单金额");
+            HSSFRow row1 = sheet.createRow(1);
+            row1.createCell(0).setCellValue("1");
+            row1.createCell(1).setCellValue("NO00001");
+
+            // 日期格式化
+            HSSFCellStyle cellStyle2 = workbook.createCellStyle();
+            HSSFCreationHelper creationHelper = workbook.getCreationHelper();
+            cellStyle2.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+            sheet.setColumnWidth(2, 20 * 256); // 设置列的宽度
+
+            HSSFCell cell2 = row1.createCell(2);
+            cell2.setCellStyle(cellStyle2);
+            cell2.setCellValue(new Date());
+
+            row1.createCell(3).setCellValue(2);
+
+
+            // 保留两位小数
+            HSSFCellStyle cellStyle3 = workbook.createCellStyle();
+            cellStyle3.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+            HSSFCell cell4 = row1.createCell(4);
+            cell4.setCellStyle(cellStyle3);
+            cell4.setCellValue(29.5);
+
+
+            // 货币格式化
+            HSSFCellStyle cellStyle4 = workbook.createCellStyle();
+            HSSFFont font = workbook.createFont();
+            font.setFontName("华文行楷");
+            font.setFontHeightInPoints((short) 15);
+            font.setColor(HSSFColor.RED.index);
+            cellStyle4.setFont(font);
+
+            HSSFCell cell5 = row1.createCell(5);
+            cell5.setCellFormula("D2*E2");  // 设置计算公式
+
+            // 获取计算公式的值
+            HSSFFormulaEvaluator e = new HSSFFormulaEvaluator(workbook);
+            cell5 = e.evaluateInCell(cell5);
+            System.out.println(cell5.getNumericCellValue());
+
+
+            workbook.setActiveSheet(0);
+            workbook.write(outputStream);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            outputStream.close();
+        }
 
     }
 
