@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ import java.util.List;
  **/
 @Controller
 @RequestMapping("/device")
-@RequiresPermissions("user:normal")
+//@RequiresPermissions("user:normal")
 public class DeviceController extends BaseController{
     @Autowired
     @Qualifier(value = "productEntityManager")
@@ -85,8 +86,10 @@ public class DeviceController extends BaseController{
     public void getDeviceLists2Excel(HttpServletRequest request, HttpServletResponse response){
         long id=statusService.getCurrUserId(getSession());
         DeviceConditions conditions = new DeviceConditions();
+        conditions.setUserId(id);
+        conditions.setOrderBy(1);
         DeviceSearchCondition searchCondition=new DeviceSearchCondition(conditions);
-        File file = new File(env.getProperty("file.excel.path"));
+
         List<? extends DeviceInfo> deviceInfos = null;
         try {
             deviceInfos = searchCondition.searchByConditions(em);
@@ -94,16 +97,29 @@ public class DeviceController extends BaseController{
             e.printStackTrace();
         }
         fileService.deviceLists2Excel(deviceInfos);
-        try(OutputStream os = response.getOutputStream();
-            FileInputStream fo = new FileInputStream(file)) {
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment");
-            byte[] bis = UtilServiceImpl.readStream(fo);
-            os.write(bis);
-            os.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
+        File file = new File(env.getProperty("file.excel.path")+"template1.xls");
+        if(file.isFile() && file.exists()) {
+            String fileName = "总设备列表.xls";
+            try (OutputStream os = response.getOutputStream();
+                 FileInputStream fo = new FileInputStream(file)) {
+                response.setHeader("content-type", "application/x-xls");
+                response.setContentType("application/x-xls");
+                if(request.getHeader("user-agent").toLowerCase().contains("firefox")){
+                    response.setHeader("Content-Disposition", "attachment;filename=" +
+                            new String(fileName.getBytes("utf-8"),"ISO-8859-1"));
+                }else{
+                    response.setHeader("Content-Disposition","attachment;filename="+
+                            URLEncoder.encode(fileName,"utf-8"));
+                }
+
+                byte[] bis = UtilServiceImpl.readStream(fo);
+                os.write(bis);
+                os.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+
         }
 
     }

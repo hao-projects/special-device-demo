@@ -32,6 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -44,11 +50,14 @@ import java.util.concurrent.Callable;
 // requirespermissions 标识当前用户需要怎样的权限才能访问这个url
 @Controller
 @RequestMapping("/admin")
-//@RequiresPermissions(value = {"user:acceptor","user:approver"},logical = Logical.OR)
+@RequiresPermissions(value = {"user:acceptor","user:approver"},logical = Logical.OR)
 public class AdminController extends BaseController {
     //autowired 标识这个变量是一个接口变量，并且会自动在标识有service的实现类中自动继承
     @Autowired
     private UserService userSevice;
+
+    @Autowired
+    private FileService fileService;
 
     @RequestMapping("/websocket")
     public String websocket() {
@@ -213,8 +222,45 @@ public class AdminController extends BaseController {
     }
 
     @RequestMapping(value = "/approvedApplies/getExcel", method = RequestMethod.GET)
-    public void  getapprovedApplies2Excel(){
+    public void  getapprovedApplies2Excel(HttpServletRequest request, HttpServletResponse response){
+        int[] a = {3, 5};
+        ApplyConditions applyConditions = new ApplyConditions();
+        applyConditions.setStates(a);
+        applyConditions.setRole(RoleTypeEnum.审批人员);
+        UserInfo user = statusService.getCurrUser(getSession());
+        applyConditions.setAgencyId(user.getAgencyId());
+        ApplySearchCondition searchCondition = new ApplySearchCondition(applyConditions);
+        List<WorkFlowInfo> lists = null;
+        try {
+            lists = searchCondition.convert2Workflow(em);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fileService.approvedApplies2Excel(lists);
+        File file = new File(env.getProperty("file.excel.path")+"template2.xls");
+        if(file.isFile() && file.exists()) {
+            String fileName = "使用登记明细表.xls";
+            try (OutputStream os = response.getOutputStream();
+                 FileInputStream fo = new FileInputStream(file)) {
+                response.setHeader("content-type", "application/x-xls");
+                response.setContentType("application/x-xls");
+                if(request.getHeader("user-agent").toLowerCase().contains("firefox")){
+                    response.setHeader("Content-Disposition", "attachment;filename=" +
+                            new String(fileName.getBytes("utf-8"),"ISO-8859-1"));
+                }else{
+                    response.setHeader("Content-Disposition","attachment;filename="+
+                            URLEncoder.encode(fileName,"utf-8"));
+                }
 
+                byte[] bis = UtilServiceImpl.readStream(fo);
+                os.write(bis);
+                os.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+
+        }
     }
 
     @Autowired

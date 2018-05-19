@@ -40,7 +40,7 @@ public final class ExcelTitle {
                 Pair.of(10,"登记机关/人员"),
                 Pair.of(11, "申请日期"),
                 Pair.of(12,"发证日期"),
-                Pair.of(13,"使用等级证编号")
+                Pair.of(13,"使用登记证编号")
         );
     }
 }

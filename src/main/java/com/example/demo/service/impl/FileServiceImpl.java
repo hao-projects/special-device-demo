@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.Consts.ExcelTitle;
+import com.example.demo.connector.responser.WorkFlowInfo;
 import com.example.demo.dao.file.FileDao;
 import com.example.demo.entity.data.ApplyInfo;
 import com.example.demo.entity.data.FileData;
@@ -163,7 +164,7 @@ public class FileServiceImpl implements FileService {
 
     public void deviceLists2Excel(List<? extends DeviceInfo> deviceInfoList) {
         String path= env.getProperty("file.excel.path");
-        String filePath = path + "template.xls";
+        String filePath = path + "template1.xls";
         File file = new File(filePath);
         try(OutputStream outputStream = new FileOutputStream(file)) {
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -176,20 +177,20 @@ public class FileServiceImpl implements FileService {
             int col = 0;
             for(DeviceInfo deviceInfo:deviceInfoList){
                 HSSFRow tmp = sheet.createRow(i);
-                row.createCell(col++).setCellValue(String.valueOf(i));
-                row.createCell(col++).setCellValue(deviceInfo.getDeviceCategory());
-                row.createCell(col++).setCellValue(deviceInfo.getDeviceClass());
-                row.createCell(col++).setCellValue(deviceInfo.getDeviceKind());
-                row.createCell(col++).setCellValue(deviceInfo.getEqCode());
-                row.createCell(col++).setCellValue(deviceInfo.getComCode());
-                row.createCell(col++).setCellValue(deviceInfo.getNoUseDate());
-                row.createCell(col++).setCellValue(deviceInfo.getNoUseEndDate());
-                row.createCell(col++).setCellValue(deviceInfo.getDisableDate());
-                row.createCell(col++).setCellValue(deviceInfo.getComTablePerson());
-                row.createCell(col++).setCellValue(deviceInfo.getAcceptorAgencyName());
-                row.createCell(col++).setCellValue(deviceInfo.getCreateTime()+"");
-                row.createCell(col++).setCellValue(deviceInfo.getIssueDate());
-                row.createCell(col++).setCellValue(deviceInfo.getRegistCode());
+                tmp.createCell(col++).setCellValue(String.valueOf(i));
+                tmp.createCell(col++).setCellValue(deviceInfo.getDeviceCategory());
+                tmp.createCell(col++).setCellValue(deviceInfo.getDeviceClass());
+                tmp.createCell(col++).setCellValue(deviceInfo.getDeviceKind());
+                tmp.createCell(col++).setCellValue(deviceInfo.getEqCode());
+                tmp.createCell(col++).setCellValue(deviceInfo.getComCode());
+                tmp.createCell(col++).setCellValue(deviceInfo.getNoUseDate());
+                tmp.createCell(col++).setCellValue(deviceInfo.getNoUseEndDate());
+                tmp.createCell(col++).setCellValue(deviceInfo.getDisableDate());
+                tmp.createCell(col++).setCellValue(deviceInfo.getComTablePerson());
+                tmp.createCell(col++).setCellValue(deviceInfo.getAcceptorAgencyName());
+                tmp.createCell(col++).setCellValue(deviceInfo.getCreateTime()+"");
+                tmp.createCell(col++).setCellValue(deviceInfo.getIssueDate());
+                tmp.createCell(col++).setCellValue(deviceInfo.getRegistCode());
                 col = 0;
                 i++;
 
@@ -200,6 +201,47 @@ public class FileServiceImpl implements FileService {
             e.printStackTrace();
         }
 
+    }
+
+
+    public void approvedApplies2Excel(List<WorkFlowInfo> works){
+        String path= env.getProperty("file.excel.path");
+        String filePath = path + "template2.xls";
+        File file = new File(filePath);
+        try(OutputStream outputStream = new FileOutputStream(file)) {
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("Sheet1");
+            HSSFRow row = sheet.createRow(0);
+            for(Pair<Integer, String> p : ExcelTitle.getTotalRegistDetailForm()){
+                row.createCell(p.getLeft()).setCellValue(p.getRight());
+            }
+            int i = 1;
+            int col = 0;
+            for(WorkFlowInfo wf:works){
+                HSSFRow tmp = sheet.createRow(i);
+                tmp.createCell(col++).setCellValue(String.valueOf(i));
+                tmp.createCell(col++).setCellValue(wf.getUseComName());
+                tmp.createCell(col++).setCellValue(wf.getDeviceCategory());
+                tmp.createCell(col++).setCellValue(wf.getDeviceClass());
+                tmp.createCell(col++).setCellValue(wf.getDeviceKind());
+                tmp.createCell(col++).setCellValue(wf.getEqCode());
+                tmp.createCell(col++).setCellValue(wf.getRegistKind());
+                tmp.createCell(col++).setCellValue(" ");
+                tmp.createCell(col++).setCellValue(" ");
+                tmp.createCell(col++).setCellValue(" ");
+                tmp.createCell(col++).setCellValue(wf.getAcceptorAgencyName()+"/"+wf.getAcceptorName());
+                tmp.createCell(col++).setCellValue(wf.getApplyDate());
+                tmp.createCell(col++).setCellValue(wf.getSendRegistDate());
+                tmp.createCell(col++).setCellValue(wf.getRegistCode());
+                col = 0;
+                i++;
+
+            }
+            workbook.setActiveSheet(0);
+            workbook.write(outputStream);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
