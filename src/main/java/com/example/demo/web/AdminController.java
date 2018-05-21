@@ -239,7 +239,7 @@ public class AdminController extends BaseController {
         fileService.approvedApplies2Excel(lists);
         File file = new File(env.getProperty("file.excel.path")+"template2.xls");
         if(file.isFile() && file.exists()) {
-            String fileName = "使用登记明细表.xls";
+            String fileName = "设备使用登记明细汇总表.xls";
             try (OutputStream os = response.getOutputStream();
                  FileInputStream fo = new FileInputStream(file)) {
                 response.setHeader("content-type", "application/x-xls");

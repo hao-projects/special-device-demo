@@ -7,6 +7,8 @@ import com.example.demo.enums.DeviceTypeEnum;
 import com.example.demo.service.Validatable;
 import com.example.demo.service.exception.CustomException;
 import com.example.demo.service.utils.UtilServiceImpl;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -32,6 +34,25 @@ public class DeviceInfo implements Serializable,Validatable {
     private String noUseDate;
     private String noUseEndDate;
     private String disableDate;
+
+
+    public String getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(String issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    @Column(name="issueDate")
     private String issueDate;
     private String comTablePerson;
     private String acceptorAgencyName;    //登记机关
@@ -46,6 +67,7 @@ public class DeviceInfo implements Serializable,Validatable {
     private long ownerId;
     private String ownerComName;
     private long agencyId;
+    @Column(name="createTime")
     private long createTime;
     private boolean processing;
     private long processedApplyId;
@@ -291,14 +313,7 @@ public class DeviceInfo implements Serializable,Validatable {
         return agencyId;
     }
 
-    public long getCreateTime(){
-       // return UtilServiceImpl.date2String(UtilServiceImpl.long2Date(createTime,"yyyy年MM月dd日"),"yyyy年MM月dd日");
-        return createTime;
-    }
 
-    public void setCreateTime(long createTime) {
-        this.createTime = createTime;
-    }
 
     public DeviceTypeEnum getDeviceType() {
         return deviceType;
@@ -358,13 +373,6 @@ public class DeviceInfo implements Serializable,Validatable {
         this.deviceSerialNum = deviceSerialNum;
     }
 
-    public String getIssueDate() {
-        return issueDate;
-    }
-
-    public void setIssueDate(String issueDate) {
-        this.issueDate = issueDate;
-    }
 
     public String getNextTestDate() {
         return nextTestDate;

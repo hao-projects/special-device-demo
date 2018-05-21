@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,6 +166,8 @@ public class FileServiceImpl implements FileService {
     public void deviceLists2Excel(List<? extends DeviceInfo> deviceInfoList) {
         String path= env.getProperty("file.excel.path");
         String filePath = path + "template1.xls";
+        String format = "yyyy年MM月dd日";
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
         File file = new File(filePath);
         try(OutputStream outputStream = new FileOutputStream(file)) {
             HSSFWorkbook workbook = new HSSFWorkbook();
@@ -188,7 +191,7 @@ public class FileServiceImpl implements FileService {
                 tmp.createCell(col++).setCellValue(deviceInfo.getDisableDate());
                 tmp.createCell(col++).setCellValue(deviceInfo.getComTablePerson());
                 tmp.createCell(col++).setCellValue(deviceInfo.getAcceptorAgencyName());
-                tmp.createCell(col++).setCellValue(deviceInfo.getCreateTime()+"");
+                tmp.createCell(col++).setCellValue(sdf.format(new Date(deviceInfo.getCreateTime())));
                 tmp.createCell(col++).setCellValue(deviceInfo.getIssueDate());
                 tmp.createCell(col++).setCellValue(deviceInfo.getRegistCode());
                 col = 0;
