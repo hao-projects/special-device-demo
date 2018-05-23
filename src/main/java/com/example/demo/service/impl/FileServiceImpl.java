@@ -72,7 +72,7 @@ public class FileServiceImpl implements FileService {
         }
         for (Form form:applyInfo.getFormList()){
             int formId=form.getFormType().ordinal();
-           stringMap.put(form.getFormType(),form2pdf(form,formId,applyInfo.getId())) ;
+            stringMap.put(form.getFormType(),form2pdf(form,formId,applyInfo.getId())) ;
 
         }
         return stringMap;
