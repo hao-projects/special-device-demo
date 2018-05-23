@@ -125,41 +125,81 @@ public class FileServiceImpl implements FileService {
         long file_id=applyId*100+formType;
         String path= FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
         CloseableHttpClient client= HttpClients.createDefault();
-        try {
-            String url=env.getProperty("custome.fileConverter.serverUrl");
-            System.out.println(url+formType);
-            HttpPost request = new HttpPost(url+formType);
+        CloseableHttpResponse response;
+//        try {
+//            String url=env.getProperty("custome.fileConverter.serverUrl");
+//            System.out.println(url+formType);
+//            HttpPost request = new HttpPost(url+formType);
+//
+//            StringEntity params = new StringEntity(jsonObject.toString(),Charset.forName("UTF-8"));
+//
+//            request.addHeader("content-type", "application/json; charset=utf-8");
+//
+//            request.setEntity(params);
+//            CloseableHttpResponse response=client.execute(request);
+//            if(response.getStatusLine().getStatusCode()==200){
+//               InputStream is= response.getEntity().getContent();
+//                FileOutputStream fos=new FileOutputStream(new File(path));
+//                byte[] buffer = new byte[1024];
+//                int len = 0;
+//                while ((len = is.read(buffer)) != -1) {
+//                    fos.write(buffer, 0, len);
+//                }
+//                is.close();
+//                fos.close();
+//                client.close();
+//            }
+//            else {
+//                throw new Exception();
+//           }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            System.out.println("can not connect to file converter service");
+//            file_id=0;
+//            //throw ex;
+//        } finally {
+//            return file_id;
+//        }
 
-            StringEntity params = new StringEntity(jsonObject.toString(),Charset.forName("UTF-8"));
+        try {
+            String url = env.getProperty("custome.fileConverter.serverUrl");
+            System.out.println(url + formType);
+            HttpPost request = new HttpPost(url + formType);
+
+            StringEntity params = new StringEntity(jsonObject.toString(), Charset.forName("UTF-8"));
 
             request.addHeader("content-type", "application/json; charset=utf-8");
 
             request.setEntity(params);
-            CloseableHttpResponse response=client.execute(request);
+            response = client.execute(request);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            System.out.println("can not connect to file converter service");
+            file_id = 0;
+            return file_id;
+        }
+        try(InputStream is= response.getEntity().getContent();
+            FileOutputStream fos=new FileOutputStream(new File(path))){
             if(response.getStatusLine().getStatusCode()==200){
-               InputStream is= response.getEntity().getContent();
-                FileOutputStream fos=new FileOutputStream(new File(path));
                 byte[] buffer = new byte[1024];
                 int len = 0;
                 while ((len = is.read(buffer)) != -1) {
                     fos.write(buffer, 0, len);
                 }
-                is.close();
-                fos.close();
-                client.close();
-            }
-            else {
+            }else{
                 throw new Exception();
-           }
+            }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
+
+        }catch (Exception e){
+            e.printStackTrace();
             System.out.println("can not connect to file converter service");
-            file_id=0;
-            //throw ex;
-        } finally {
-            return file_id;
+            file_id = 0;
         }
+        return file_id;
+
+
 
     }
 
