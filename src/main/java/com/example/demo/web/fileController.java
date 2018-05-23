@@ -49,9 +49,7 @@ public class fileController extends BaseController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse testUploadFile(HttpServletRequest req, MultipartHttpServletRequest multiReq, @RequestParam("applyId")
-            long apply_id, @RequestParam("fileName") String fileName)
-            throws
-            Exception {
+            long apply_id, @RequestParam("fileName") String fileName) {
         ApplyInfo applyInfo = applyService.findByApplyID(apply_id,getSession());
         long file_id=FilePathUtil.getFileId(fileName, applyInfo);
         FileData fileData = new FileData();
@@ -59,23 +57,25 @@ public class fileController extends BaseController {
         fileData.setApplyId(apply_id);
         fileData.setFileName(fileName+".pdf");
         String path = FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
-        FileOutputStream fos = new FileOutputStream(new File(path));
         MultipartFile file = multiReq.getFile("file");
-        FileInputStream fs = (FileInputStream) file.getInputStream();
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        while ((len = fs.read(buffer)) != -1) {
-            fos.write(buffer, 0, len);
-        }
-        fos.close();
-        fs.close();
-        applyService.saveApply(applyInfo, getSession());
-        fileService.save(fileData);
         Map<String, String> data = new HashMap<>();
-
-        data.put("thumbnail", "/file/thumbnail?fileId=" + file_id);
-        data.put("preview", "/file/preview?fileId=" + file_id);
-        data.put("download", "/file/download?fileId=" + file_id);
+        try(FileOutputStream fos = new FileOutputStream(new File(path));
+            FileInputStream fs = (FileInputStream) file.getInputStream();){
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = fs.read(buffer)) != -1) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+            fs.close();
+            applyService.saveApply(applyInfo, getSession());
+            fileService.save(fileData);
+            data.put("thumbnail", "/file/thumbnail?fileId=" + file_id);
+            data.put("preview", "/file/preview?fileId=" + file_id);
+            data.put("download", "/file/download?fileId=" + file_id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return new JsonResponse(200, null, data);
     }
@@ -91,35 +91,30 @@ public class fileController extends BaseController {
             file_id) throws Exception {
 
         File file = new File(FilePathUtil.getPathById(file_id,env.getProperty("file.save.path")));
+        String agent = request.getHeader("Applier-Agent");
+        response.setHeader("content-type", "application/octet-stream");
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment");
         //检查applyid是否是下载者的
         //validate.isPermission(SecurityUtils.getSubject(),fileService.getFileById(file_id).getApplyId());
-        try {
-            String agent = request.getHeader("Applier-Agent");
+        try(OutputStream os = response.getOutputStream();
+            FileInputStream fo = new FileInputStream(file)) {
+
             //FileData fileData = fileService.getFileById(file_id);
             //String fileName = fileData.getFileName();
 //            if (agent.contains("Firefox")) ;
 //                //fileName = MimeUtility.encodeWord(fileName);
 //            else
 //                fileName = URLEncoder.encode(fileName, "utf-8").replaceAll("\\+", "%20");
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment");
-            OutputStream os = response.getOutputStream();
-            FileInputStream fo = new FileInputStream(file);
-            try {
-                byte[] bis = UtilServiceImpl.readStream(fo);
-                os.write(bis);
-                os.flush();
-            } catch (Exception e) {
-                throw e;
-            } finally {
-                fo.close();
-                os.close();
-            }
+
+
+            byte[] bis = UtilServiceImpl.readStream(fo);
+            os.write(bis);
+            os.flush();
+
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new FileFailException(e.getMessage());
         }
 
 
@@ -139,18 +134,15 @@ public class fileController extends BaseController {
         response.setHeader("content-type", "application/pdf");
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
-        OutputStream os = response.getOutputStream();
-        FileInputStream fo = new FileInputStream(file);
-        try {
+
+        try (OutputStream os = response.getOutputStream();
+             FileInputStream fo = new FileInputStream(file)){
             byte[] bis = UtilServiceImpl.readStream(fo);
             os.write(bis);
             os.flush();
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
-        } finally {
-            fo.close();
-            os.close();
+
         }
 
 
