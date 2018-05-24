@@ -81,6 +81,7 @@ public class DeviceServiceImpl  implements DeviceService,Apply2DeviceService {
         apply.setAcceptorAgencyName(deviceInfo.getAcceptorAgencyName());
         apply.setUseComName(deviceInfo.getUseComName());
         apply.setDeviceType(deviceInfo.getDeviceType());
+
     }
     @Override
     public DeviceInfo apply2Device(ApplyInfo applyInfo,boolean pass,Session session) throws Exception{

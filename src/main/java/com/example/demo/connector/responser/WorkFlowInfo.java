@@ -129,4 +129,5 @@ public class WorkFlowInfo implements Serializable{
     }
     public String getRegistKind(){return applyInfo.getRegistKind();}
     public ApplyTypeEnum getApplyType(){return applyInfo.getApplyType();}
+    public String getDeviceName(){return applyInfo.getDeviceName();}
 }

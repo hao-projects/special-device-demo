@@ -84,6 +84,11 @@ public class ApplyServiceImpl implements ApplyService{
             deviceService.device2Apply(apply.getDeviceId(),apply);
         }
         Map<FormTypeEnum,Long> map=apply.getForms();
+        Form form;
+        if(apply.getFormList() != null){
+            form = apply.getFormList().get(0);
+            apply.setDeviceName(form.getDeviceName());
+        }
         if(fileService.createPdf(apply)!=null){
         map.putAll(fileService.createPdf(apply));
         }
