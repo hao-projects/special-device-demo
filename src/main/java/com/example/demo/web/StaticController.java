@@ -39,7 +39,7 @@ public class StaticController {
 
     @RequestMapping(value = "/captchaimage")
     @ResponseBody
-    public void getKaptchaImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void getKaptchaImage(HttpServletRequest request, HttpServletResponse response)  {
         response.setDateHeader("Expires", 0);
         response.setHeader("Cache-Control", "no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
@@ -55,13 +55,13 @@ public class StaticController {
         //cookie.setMaxAge(30); // 300秒生存期
         //response.addCookie(cookie); // 将cookie加入response
         BufferedImage bi = captchaProducer.createImage(capText);// 生成验证码图片
-        ServletOutputStream out = response.getOutputStream();
-        ImageIO.write(bi, "jpg", out);
-        try {
+        try(ServletOutputStream out = response.getOutputStream()){
+            ImageIO.write(bi, "jpg", out);
             out.flush();
-        } finally {
-            out.close();
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
     }
     @Autowired

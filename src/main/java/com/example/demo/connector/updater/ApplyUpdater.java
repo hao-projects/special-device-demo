@@ -45,6 +45,9 @@ public class ApplyUpdater implements Serializable {
         }
         newFormList.addAll(formList);
         applyInfo.setFormList(newFormList);
+        if(newFormList.size()>0){
+            applyInfo.setDeviceName(newFormList.get(0).getDeviceName());
+        }
         applyInfo.setCreateTime(UtilServiceImpl.date2Long(new Date()));
     }
 

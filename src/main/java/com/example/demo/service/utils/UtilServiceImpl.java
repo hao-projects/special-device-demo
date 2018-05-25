@@ -169,6 +169,7 @@ public class UtilServiceImpl  {
                 bops.write(data);
             }
             return bops.toByteArray();
+
         }catch(Exception e){
             return null;
         }

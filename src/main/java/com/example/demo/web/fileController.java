@@ -66,8 +66,6 @@ public class fileController extends BaseController {
             while ((len = fs.read(buffer)) != -1) {
                 fos.write(buffer, 0, len);
             }
-            fos.close();
-            fs.close();
             applyService.saveApply(applyInfo, getSession());
             fileService.save(fileData);
             data.put("thumbnail", "/file/thumbnail?fileId=" + file_id);
@@ -150,31 +148,32 @@ public class fileController extends BaseController {
 
     @RequestMapping("/thumbnail")
     public void thumbnailImage(HttpServletResponse response, @RequestParam("fileId") long
-            file_id) throws Exception {
+            file_id)  {
         String path = FilePathUtil.getPathById(file_id,env.getProperty("file.save.path"));
         response.setDateHeader("Expires", 0);
         response.setHeader("Cache-Control", "no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
         response.setHeader("Pragma", "no-cache");
         response.setContentType("image/jpeg");
-        ServletOutputStream out = response.getOutputStream();
-        BufferedImage image;
-        File file = new File(path + "p");
-        if (file.exists()) {
-            image = UtilServiceImpl.getImage(path + "p");
-        } else {
-            try {
-                image = UtilServiceImpl.getImage(path);
-            } catch (Exception e) {
-                //catch pdf cannot parse Exception
-                UtilServiceImpl.fixpdf(path, new FileOutputStream(file));
+        try(ServletOutputStream out = response.getOutputStream()){
+            BufferedImage image;
+            File file = new File(path + "p");
+            if (file.exists()) {
                 image = UtilServiceImpl.getImage(path + "p");
+            } else {
+                try {
+                    image = UtilServiceImpl.getImage(path);
+                } catch (Exception e) {
+                    //catch pdf cannot parse Exception
+                    UtilServiceImpl.fixpdf(path, new FileOutputStream(file));
+                    image = UtilServiceImpl.getImage(path + "p");
+                }
             }
+            ImageIO.write(image, "jpg", out);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        ImageIO.write(image, "jpg", out);
 
-        out.flush();
-        out.close();
 
     }
 
