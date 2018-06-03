@@ -136,6 +136,19 @@ public class ApplyController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/saveFirst", method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse firstSaveApply(@RequestBody ApplyInfo applyInfo) throws Exception {
+        applyInfo.setCreateTime(UtilServiceImpl.date2Long(new Date()));
+        applyInfo.setStatus(new ApplyStatus());
+        applyInfo = applyService.firstSaveApply(applyInfo, statusService.getCurrUserId(getSession()));
+        Map<String, String> map = new HashMap<>();
+        map.put("applyId", applyInfo.getId() + "");
+        map.put("forms", applyInfo.getForms().toString());
+        return new JsonResponse(200, null, map);
+
+    }
+
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public @ResponseBody
     JsonResponse delApply(@RequestParam("applyId") long id) throws RuntimeException {
@@ -157,9 +170,27 @@ public class ApplyController extends BaseController {
     public @ResponseBody
     JsonResponse updateApply(@RequestBody ApplyUpdater updater) throws RuntimeException {
         Session session = getSession();
+        System.out.println(updater.getFormList().get(0).getEqUseDate());
         ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(updater.getId() + "", null);
         updater.update(applyInfo);
         ApplyInfo applyInfo1 = applyService.updateForm(applyInfo, session);
+        Map<String, Object> map = new HashMap<>();
+        map.put("applyId", applyInfo1.getId() + "");
+        map.put("forms", applyInfo1.getForms());
+        map.put("files", applyInfo1.getFiles());
+        return new JsonResponse(200, null, map);
+    }
+
+    //重写保存接口,不要走pdf接口
+    @Transactional
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse saveApply(@RequestBody ApplyUpdater updater) throws RuntimeException {
+        Session session = getSession();
+        System.out.println(updater.getFormList().get(0).getEqUseDate());
+        ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(updater.getId() + "", null);
+        updater.update(applyInfo);
+        ApplyInfo applyInfo1 = applyService.saveApply(applyInfo, session);
         Map<String, Object> map = new HashMap<>();
         map.put("applyId", applyInfo1.getId() + "");
         map.put("forms", applyInfo1.getForms());

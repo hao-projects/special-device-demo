@@ -6,6 +6,7 @@ import com.example.demo.enums.JsonResponse;
 import com.example.demo.service.ApplyService;
 import com.example.demo.service.FileService;
 
+import com.example.demo.service.RegisterCertificateService;
 import com.example.demo.service.exception.FileFailException;
 import com.example.demo.service.utils.FilePathUtil;
 import com.example.demo.service.utils.UtilServiceImpl;
@@ -45,6 +46,9 @@ public class fileController extends BaseController {
     private FileService fileService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private RegisterCertificateService certificateService;
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public @ResponseBody
@@ -191,5 +195,12 @@ public class fileController extends BaseController {
 //        System.out.println(redisTemplate.opsForHash().get("image","1"));
 //        //System.out.println(redisTemplate.opsForHash().entries("image"));
         return new JsonResponse();
+    }
+
+
+    @RequestMapping(value = "/print", method = RequestMethod.GET)
+    public @ResponseBody
+    JsonResponse printUserRegistCertificate(@RequestParam("registCode") String registCode){
+        return new JsonResponse(200,null,certificateService);
     }
 }

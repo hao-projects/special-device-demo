@@ -79,7 +79,8 @@ public class UtilServiceImpl  {
     }
     public static String date2String(Date time, String formatType) {
         try{
-            return new SimpleDateFormat(formatType).format(time);}
+            return new SimpleDateFormat(formatType).format(time);
+        }
         catch (Exception e){
             throw new CustomException("date format error");
         }

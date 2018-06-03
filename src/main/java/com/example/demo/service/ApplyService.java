@@ -21,6 +21,7 @@ public interface ApplyService {
      List<ApplyInfo> findByApplierName(String username);
      List<ApplyInfo> findAllApply();
      ApplyInfo createApply(ApplyInfo apply,long userId);
+     ApplyInfo firstSaveApply(ApplyInfo apply, long userId);
      Page<ApplyInfo> searchForUser(long userId,long deviceTypeId,long start,long end,Pageable pageable);
 
     Page<ApplyInfo> searchForApprover(long userId,long deviceTypeId,long start,long end,Pageable pageable);

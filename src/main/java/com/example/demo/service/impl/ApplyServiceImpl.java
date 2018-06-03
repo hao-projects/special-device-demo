@@ -96,6 +96,22 @@ public class ApplyServiceImpl implements ApplyService{
     }
 
     @Override
+    public ApplyInfo firstSaveApply(ApplyInfo apply, long userId) {
+        apply.setId(0);
+        apply.setOwnerId(userId);
+        if(apply.getDeviceId()!=0){
+            deviceService.device2Apply(apply.getDeviceId(),apply);
+        }
+        Form form;
+        if(apply.getFormList() != null){
+            form = apply.getFormList().get(0);
+            apply.setDeviceName(form.getDeviceName());
+        }
+
+        return applyDao.save(apply);
+    }
+
+    @Override
     public Page<ApplyInfo> searchForUser(long userId,long deviceTypeId,long start,long end,Pageable pageable) {
         return applyDao.findAll(ApplyInfoSpecification.mixSearchApply(ApplyInfoSpecification.USER,userId,deviceTypeId,
                 start,end),pageable);

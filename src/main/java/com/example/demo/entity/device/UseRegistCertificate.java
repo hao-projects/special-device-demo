@@ -61,9 +61,9 @@ public class UseRegistCertificate implements Serializable{
             case 车用气瓶:
                 certificateType=3;
                 break;
-                default:
-                    certificateType=1;
-                    break;
+            default:
+                certificateType=1;
+                break;
         }
         //不知道代表的意思
         productCode=deviceInfo.getProductCode();

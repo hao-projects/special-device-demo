@@ -35,4 +35,8 @@ public class CertificateServiceImpl implements RegisterCertificateService {
         UseRegistCertificate registCertificate=new UseRegistCertificate(deviceInfo);
         certificateDao.save(registCertificate);
     }
+
+    public UseRegistCertificate findByRegistCode(String registCode){
+        return certificateDao.findByRegistCode(registCode);
+    }
 }
