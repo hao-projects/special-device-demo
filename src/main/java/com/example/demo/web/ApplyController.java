@@ -170,7 +170,7 @@ public class ApplyController extends BaseController {
     public @ResponseBody
     JsonResponse updateApply(@RequestBody ApplyUpdater updater) throws RuntimeException {
         Session session = getSession();
-        System.out.println(updater.getFormList().get(0).getEqUseDate());
+//        System.out.println(updater.getFormList().get(0).getEqUseDate());
         ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(updater.getId() + "", null);
         updater.update(applyInfo);
         ApplyInfo applyInfo1 = applyService.updateForm(applyInfo, session);
@@ -187,7 +187,7 @@ public class ApplyController extends BaseController {
     public @ResponseBody
     JsonResponse saveApply(@RequestBody ApplyUpdater updater) throws RuntimeException {
         Session session = getSession();
-        System.out.println(updater.getFormList().get(0).getEqUseDate());
+//        System.out.println(updater.getFormList().get(0).getEqUseDate());
         ApplyInfo applyInfo = ((ApplyController) AopContext.currentProxy()).getApply(updater.getId() + "", null);
         updater.update(applyInfo);
         ApplyInfo applyInfo1 = applyService.saveApply(applyInfo, session);
