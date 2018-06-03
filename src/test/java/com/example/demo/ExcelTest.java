@@ -9,7 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 @SpringBootTest
 public class ExcelTest {
@@ -79,4 +82,13 @@ public class ExcelTest {
 //        workbook.write(outputStream);
 //        outputStream.close();
 //    }
+
+    @Test
+    public void testDate() throws ParseException {
+        Object s = "2018-04-19T16:00:00.000Z";
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        System.out.println(sf.parse(s.toString()));
+    }
 }

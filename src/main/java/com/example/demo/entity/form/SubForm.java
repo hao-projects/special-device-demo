@@ -9,7 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author yang
@@ -241,7 +243,9 @@ public class SubForm implements Serializable{
 
     public void setEqCreateDate(Object eqCreateDate) {
         try {
-            this.eqCreateDate = UtilServiceImpl.date2String((Date) eqCreateDate,"yyyy年MM月dd日");
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            sf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            this.eqCreateDate = UtilServiceImpl.date2String(sf.parse(eqCreateDate.toString()),"yyyy年MM月dd日");
 
         }catch (Exception e){
             this.eqCreateDate= eqCreateDate.toString();
