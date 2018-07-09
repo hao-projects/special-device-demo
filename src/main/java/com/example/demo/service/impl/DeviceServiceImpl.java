@@ -99,7 +99,8 @@ public class DeviceServiceImpl  implements DeviceService,Apply2DeviceService {
                 devices.add(device);
             } else if(applyInfo.getDeviceId()!=0){
                 this.device=getDeviceById(applyInfo.getDeviceId(),session);
-                devices.add(device);}
+                devices.add(device);
+            }
         }
         for(DeviceInfo subdevice:devices){
             device=subdevice;
@@ -191,22 +192,22 @@ public class DeviceServiceImpl  implements DeviceService,Apply2DeviceService {
     public void createDevice(ApplyInfo applyInfo)throws Exception{
         List<Form> forms=applyInfo.getFormList();
         for(Form form:forms){
-        switch (form.getFormType()){
-            case 特种设备使用登记表二:
-                for(SubForm form1:form.getSubList()){
-                    this.device.setProductCode(form1.getProductCode());
-                    /**other properties can be write down here
-                     * **/
+            switch (form.getFormType()){
+                case 特种设备使用登记表二:
+                    for(SubForm form1:form.getSubList()){
+                        this.device.setProductCode(form1.getProductCode());
+                        /**other properties can be write down here
+                         * **/
+                        createDevice();
+                    }
+                    break;
+                case 特种设备使用登记表一:
                     createDevice();
-                }
-                break;
-            case 特种设备使用登记表一:
-                createDevice();
-                break;
-            default:
-                device=null;
-                break;
-        }
+                    break;
+                default:
+                    device=null;
+                    break;
+            }
         }
 
     }
