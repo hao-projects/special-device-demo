@@ -39,4 +39,8 @@ public class CertificateServiceImpl implements RegisterCertificateService {
     public UseRegistCertificate findByRegistCode(String registCode){
         return certificateDao.findByRegistCode(registCode);
     }
+
+    public UseRegistCertificate findByEqCode(String eqCode){
+        return certificateDao.findByEqCode(eqCode);
+    }
 }

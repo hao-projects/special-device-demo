@@ -90,7 +90,7 @@ public class ApplyServiceImpl implements ApplyService{
             apply.setDeviceName(form.getDeviceName());
         }
         if(fileService.createPdf(apply)!=null){
-        map.putAll(fileService.createPdf(apply));
+            map.putAll(fileService.createPdf(apply));
         }
         return applyDao.save(apply);
     }

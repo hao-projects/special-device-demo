@@ -200,7 +200,7 @@ public class fileController extends BaseController {
 
     @RequestMapping(value = "/print", method = RequestMethod.GET)
     public @ResponseBody
-    JsonResponse printUserRegistCertificate(@RequestParam("registCode") String registCode){
-        return new JsonResponse(200,null,certificateService.findByRegistCode(registCode));
+    JsonResponse printUserRegistCertificate(@RequestParam("eqCode") String eqCode){
+        return new JsonResponse(200,null,certificateService.findByEqCode(eqCode));
     }
 }

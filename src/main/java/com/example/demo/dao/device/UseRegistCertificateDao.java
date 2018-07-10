@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  **/
 public interface UseRegistCertificateDao extends JpaRepository<UseRegistCertificate,Integer> {
     UseRegistCertificate findByRegistCode(String registCode);
+    UseRegistCertificate findByEqCode(String eqCode);
 }

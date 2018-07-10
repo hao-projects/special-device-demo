@@ -14,4 +14,6 @@ public interface RegisterCertificateService {
     public void createCertificate(DeviceInfo deviceInfo, Organization organization, String deviceCode, DeviceTypeEnum deviceTypeEnum)throws Exception;
 
     public UseRegistCertificate findByRegistCode(String registCode);
+
+    public UseRegistCertificate findByEqCode(String eqCode);
 }
