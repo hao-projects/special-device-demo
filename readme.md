@@ -50,5 +50,7 @@
 
 3.需要自建mysql数据库，账号密码填写，在/resource/application.properties里填写。需要提前写入的测试数据，mysql语句在/resource/database/import.sql文件里填写。
 
+note:
+
 
 
