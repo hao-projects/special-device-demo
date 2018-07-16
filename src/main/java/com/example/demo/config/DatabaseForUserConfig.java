@@ -65,8 +65,17 @@ public class DatabaseForUserConfig {
         properties.put("hibernate.hbm2ddl.auto",
                 env.getProperty("spring.jpa.hibernate.ddl-auto"));
 
-        properties.put("hibernate.hbm2ddl.import_files",
-               "database/import.sql");
+//        properties.put("hibernate.hbm2ddl.import_files",
+//               "database/importSysrole.sql");
+//        properties.put("hibernate.hbm2ddl.import_files",
+//               "database/importSysrolepermission.sql");
+//        properties.put("hibernate.hbm2ddl.import_files",
+//               "database/importSysUserrole.sql");
+//        properties.put("hibernate.hbm2ddl.import_files",
+//                "database/importUserData.sql");
+//        properties.put("hibernate.hbm2ddl.import_files",
+//                "database/importUserInfo.sql");
+
 
         properties.put("hibernate.dialect",
                 env.getProperty("spring.jpa.properties.hibernate.dialect"));

@@ -13,7 +13,9 @@ import javax.persistence.Id;
  **/
 @Entity
 public class DeviceLogs {
-    @Id@GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
     private long applyId;
     private ApplyTypeEnum applyType;

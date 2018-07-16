@@ -6,7 +6,8 @@ import java.io.Serializable;
 @Entity
 public class FileData implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private int fileTypeId;
     private String fileName;

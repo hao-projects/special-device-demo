@@ -64,9 +64,8 @@ public class DatabaseForDataConfig {
         properties.put("hibernate.hbm2ddl.auto",
                 env.getProperty("spring.jpa.hibernate.ddl-auto"));
 
-        properties.put("hibernate.hbm2ddl.import_files",
-                "database/applicants.sql");
-        //properties.put("hibernate.hbm2ddl.import_files","database/importOrganization.sql");
+//        properties.put("hibernate.hbm2ddl.import_files","database/importOrganization.sql");
+//        properties.put("hibernate.hbm2ddl.import_files","database/importDistrict.sql");
         properties.put("hibernate.dialect",
                 env.getProperty("spring.jpa.properties.hibernate.dialect"));
 

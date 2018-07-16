@@ -17,7 +17,9 @@ import java.util.List;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Form implements Serializable {
-    @Id@GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private FormTypeEnum formType;
@@ -28,6 +30,7 @@ public class Form implements Serializable {
     private String deviceClass;
     private String deviceClassCode;
     private String deviceKindCode;
+    @Column(unique = true)
     private String eqCode;
     private String designUseLimit;
     private String designComName;

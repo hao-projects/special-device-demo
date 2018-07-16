@@ -13,8 +13,8 @@ import java.io.Serializable;
 @Entity
 public class Form7v1 implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long inlineId;
     private String eqType;

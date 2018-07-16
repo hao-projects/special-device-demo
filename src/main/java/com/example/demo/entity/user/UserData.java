@@ -12,7 +12,8 @@ import java.io.Serializable;
 @Entity
 public class UserData implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String verifyId;

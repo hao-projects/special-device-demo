@@ -14,7 +14,8 @@ import java.util.SortedSet;
 @Entity
 public class Form6v1 implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long inlineId;
     private String pipeName;

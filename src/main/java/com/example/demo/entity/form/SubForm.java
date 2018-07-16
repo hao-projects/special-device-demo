@@ -4,10 +4,7 @@ import com.example.demo.enums.DeviceTypeEnum;
 import com.example.demo.service.utils.UtilServiceImpl;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +18,8 @@ import java.util.TimeZone;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubForm implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long iid;
     private long ownerId;
@@ -30,6 +28,7 @@ public class SubForm implements Serializable{
     private String eqUseAddr;
     private String reasons;
     private String pipeName;
+    @Column(unique = true)
     private String eqCode;
     private String eqLevel;
     private String designComName;

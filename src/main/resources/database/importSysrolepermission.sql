@@ -1,0 +1,11 @@
+INSERT INTO test.SysRolePermission VALUES (1, 4);
+INSERT INTO test.SysRolePermission VALUES (2, 5);
+INSERT INTO test.SysRolePermission VALUES (3, 6);
+INSERT INTO test.SysRolePermission VALUES (4, 7);
+INSERT INTO test.SysRolePermission VALUES (5, 1);
+INSERT INTO test.SysRolePermission VALUES (5, 2);
+INSERT INTO test.SysRolePermission VALUES (5, 3);
+INSERT INTO test.SysRolePermission VALUES (3, 4);
+INSERT INTO test.SysRolePermission VALUES (2, 4);
+INSERT INTO test.SysRolePermission VALUES (4, 4);
+INSERT INTO test.SysRolePermission VALUES (5, 4);

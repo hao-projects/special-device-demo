@@ -7,7 +7,8 @@ import javax.persistence.Entity;
 @Entity
 public class FileType implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String type;
     private String description;

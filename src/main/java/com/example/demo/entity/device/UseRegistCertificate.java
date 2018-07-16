@@ -19,6 +19,7 @@ public class UseRegistCertificate implements Serializable{
     private String devicekind;
     private String deviceClass;
     private String useComName;
+    @Column(unique = true)
     private String eqCode;
     private String productCode;
     private String acceptorAgencyName;

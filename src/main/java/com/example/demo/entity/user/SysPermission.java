@@ -7,7 +7,8 @@ import java.io.Serializable;
 public class
 SysPermission implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//     @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//主键.
     private String name;//名称.
     @Column(columnDefinition="enum('menu','button')")

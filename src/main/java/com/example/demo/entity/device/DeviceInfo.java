@@ -20,8 +20,10 @@ import java.util.*;
 @Entity
 public class DeviceInfo implements Serializable,Validatable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(unique = true)
     private String eqCode;    //设备代码
     private String comCode;   //单位内编号
     private DeviceTypeEnum deviceType;

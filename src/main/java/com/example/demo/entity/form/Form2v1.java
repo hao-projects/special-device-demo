@@ -12,8 +12,8 @@ import javax.persistence.Id;
 @Entity
 public class Form2v1 {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String manuComName;
     private String manufactureDate;

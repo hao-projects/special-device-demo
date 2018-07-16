@@ -15,7 +15,8 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplyStatus implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private ApplyStatesEnum states=ApplyStatesEnum.未提交;
     private String unAcceptedDetailReason;

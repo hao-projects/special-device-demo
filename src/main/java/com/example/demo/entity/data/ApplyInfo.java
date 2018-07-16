@@ -17,7 +17,8 @@ import java.util.Map;
 @Entity
 public class ApplyInfo  implements Serializable,Validatable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String codeId;
     private long deviceId=0;
@@ -33,6 +34,7 @@ public class ApplyInfo  implements Serializable,Validatable {
     private String deviceCode;
     @Column(nullable = false)
     private DeviceTypeEnum deviceType=DeviceTypeEnum.NULL;
+    @Column(unique = true)
     private String eqCode;
     private String eqUseAddr;
     private long ownerId;
@@ -72,7 +74,7 @@ public class ApplyInfo  implements Serializable,Validatable {
     @OneToOne(cascade = CascadeType.ALL)
     private ApplyStatus status;
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinTable(name = "ApplyFormList",joinColumns = {@JoinColumn(name = "applyId")},inverseJoinColumns = {@JoinColumn(name ="formId")})
+    @JoinTable(name      = "ApplyFormList",joinColumns = {@JoinColumn(name = "applyId")},inverseJoinColumns = {@JoinColumn(name ="formId")})
     private List<Form> formList;
     public ApplyInfo(){
         createTime= UtilServiceImpl.getLongCurrTime();
